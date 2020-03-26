@@ -1,0 +1,44 @@
+version: '2'
+services:
+  db:
+    image: mysql:5.7.29
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: moodle
+      MYSQL_USER: moodle
+      MYSQL_PASSWORD: R5tjPJCMGFH43N35
+      MYSQL_ROOT_PASSWORD: €€Mind.Engineering€€
+    volumes:
+      - ./volumes/private/db_data:/var/lib/mysql
+      - ./volumes/private/db_init:/docker-entrypoint-initdb.d
+    network_mode: bridge
+  web:
+    build: ./docker-image
+    depends_on:
+      - db
+    restart: unless-stopped
+    links:
+      - db:db
+    volumes:
+      - ./volumes/public/public_html:/web_data/public_html
+      - ./volumes/public/moodledata:/web_data/moodledata
+    environment:
+      FILE_MANAGER_USER: moodle
+      FILE_MANAGER_PASSWORD: $$2y$$10$$8Sllye8ImUvceOBxKUt/1O9cmuQ8hnjDB5UxtuYOxnsROvegFrVme
+      #password generator for tinyfilemanager http://www.passwordtool.hu/php5-password-hash-generator
+      #default pass moodle
+      #You can escape the $ symbol with another $. https://docs.docker.com/compose/compose-file/#variable-substitution
+      MOODLE_DB_TYPE: mysqli
+      MOODLE_DB_HOST: db
+      MOODLE_DB_USER: moodle
+      MOODLE_DB_NAME: moodle
+      MOODLE_DB_PASS: R5tjPJCMGFH43N35
+      MOODLE_DB_PRFX: mdl_
+      MOODLE_DATA_ROOT: /web_data/moodledata
+      MOODLE_DIRECTORY_PERMISSIONS: '02777'
+      MOODLE_ADMIN_DIRECTORY: admin
+      MOODLE_HOST_PROTOCOLE: http
+      VIRTUAL_HOST: '127.0.0.1'
+    ports:
+      - 80:80
+    network_mode: bridge
