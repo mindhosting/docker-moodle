@@ -18,18 +18,16 @@ logo_print(){
 
 EOF
 }
-
-set_apache_servername(){
+apache_set_servername(){
     echo "ServerName "$VIRTUAL_HOST >> /etc/apache2/apache2.conf
-    echo "[OK] APACHE SERVER NAME CONFIGURATION"
+    echo "[OK] APACHE SERVER NAME CONFIGURED"
 }
-
 moodle_setup(){
     if [[ -z "$(ls -A /web_data/public_html)" ]]; then
         cp -ar /web_data/moodle/. /web_data/public_html
         cp /web_data/public_html/config-dist.php /web_data/public_html/config.php
         rm -r /web_data/moodle
-        echo "[OK] POPULATING WEB DIRECTORY WITH MOODLE FILES"
+        echo "[OK] WEB DIRECTORY POPULATED WITH MOODLE FILES"
     fi    
 }
 moodle_update_config(){
@@ -43,28 +41,40 @@ moodle_update_config(){
     sed -i "/->dataroot/c\$CFG->dataroot  = '"$MOODLE_DATA_ROOT"';" /web_data/public_html/config.php
     sed -i "/->directorypermissions/c\$CFG->directorypermissions = "$MOODLE_DIRECTORY_PERMISSIONS";" /web_data/public_html/config.php
     sed -i "/->admin/c\$CFG->admin = '"$MOODLE_ADMIN_DIRECTORY"';" /web_data/public_html/config.php
-    echo "[OK] UPDATING MOODLE CONFIG FILE"
+    echo "[OK] MOODLE CONFIG FILE UPDATED"
 }
-set_apache_permessions(){
-    chown -R www-data:www-data /web_data/public_html
-    chown -R www-data:www-data /web_data/moodledata
-    echo "[OK] SET APACHE DIRECORY PERMESSIONS"
-}
-set_filemanager_credential(){
+filemanager_set_credential(){
     if [[ -n "$FILE_MANAGER_USER" ]] && [[ -n "$FILE_MANAGER_PASSWORD" ]]; then
         sed -i -e "s#'CHANGEME_USER' => 'CHANGEME_PASSWORD'#'"$FILE_MANAGER_USER"' => '"$FILE_MANAGER_PASSWORD"'#g" /var/www/filemanager/index.php
-        echo "[OK] SET TINY FILE MANAGER CREDENTIAL"
+        echo "[OK] TINY FILE MANAGER CREDENTIAL SETTED UP"
     fi
+}
+moodle_securing_web(){
+    chown -R www-data:www-data /web_data/public_html
+    chmod -R 0755 /web_data/public_html
+    find /web_data/public_html -type f -exec chmod 0644 {} \;
+    #chmod -R +a "www-data allow read,delete,write,append,file_inherit,directory_inherit" /web_data/public_html
+    echo "[OK] MOODLE WEB SECURED"
+}
+moodle_securing_data(){
+    chmod -R 0777 /web_data/moodledata
+    echo "[OK] MOODLE DATA SECURED"
+}
+cron_service_start(){
+    service cron start 1>/dev/null 2>&1;
+    echo "[OK] CRON SERVICE STARTED"
 }
 if [[ "$1" == apache2* ]]; then
     logo_print
     echo "[Initilizing ...]"
     echo ""
-    set_apache_servername
+    apache_set_servername
     moodle_setup
     moodle_update_config
-    set_apache_permessions
-    set_filemanager_credential
+    moodle_securing_web
+    moodle_securing_data
+    filemanager_set_credential
+    cron_service_start
     echo ""
     echo ""
     echo "**** CONTAINER STARED SUCCESSFULY ****"

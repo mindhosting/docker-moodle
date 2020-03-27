@@ -74,6 +74,13 @@ RUN mkdir public_html moodledata && \
     unzip moodle-latest-38.zip && \
     rm -r moodle-latest-38.zip
 
+# Set up moodle cron
+RUN apt-get update && apt-get -y install cron && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+COPY moodle-cron /etc/cron.d/moodle-cron
+RUN chmod 0644 /etc/cron.d/moodle-cron && \
+    crontab /etc/cron.d/moodle-cron
+
 # Declaring volumes
 VOLUME web_data/public_html
 VOLUME web_data/moodledata

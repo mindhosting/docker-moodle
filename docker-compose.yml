@@ -10,7 +10,7 @@ services:
       MYSQL_ROOT_PASSWORD: €€Mind.Engineering€€
     volumes:
       - ./volumes/private/db_data:/var/lib/mysql
-      - ./volumes/private/db_init:/docker-entrypoint-initdb.d
+#      - ./volumes/private/db_init:/docker-entrypoint-initdb.d
     network_mode: bridge
   web:
     build: ./docker-image
@@ -25,9 +25,9 @@ services:
     environment:
       FILE_MANAGER_USER: moodle
       FILE_MANAGER_PASSWORD: $$2y$$10$$8Sllye8ImUvceOBxKUt/1O9cmuQ8hnjDB5UxtuYOxnsROvegFrVme
-      #password generator for tinyfilemanager http://www.passwordtool.hu/php5-password-hash-generator
-      #default pass moodle
-      #You can escape the $ symbol with another $. https://docs.docker.com/compose/compose-file/#variable-substitution
+#     password generator for tinyfilemanager http://www.passwordtool.hu/php5-password-hash-generator
+#     default pass moodle
+#     You can escape the $ symbol with another $. https://docs.docker.com/compose/compose-file/#variable-substitution
       MOODLE_DB_TYPE: mysqli
       MOODLE_DB_HOST: db
       MOODLE_DB_USER: moodle
