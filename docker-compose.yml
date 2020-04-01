@@ -32,7 +32,7 @@ services:
   moodle:
     env_file:
       - ./.env
-    build: ./docker/moodle38
+    build: ./docker
     depends_on:
       - db
       - reverse-proxy
