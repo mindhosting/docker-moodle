@@ -48,17 +48,6 @@ RUN apt-get update -yq && \
 RUN locale-gen en_US.UTF-8 en_GB.UTF-8 de_DE.UTF-8 es_ES.UTF-8 fr_FR.UTF-8 it_IT.UTF-8 km_KH sv_SE.UTF-8 fi_FI.UTF-8 && \
     a2enmod rewrite expires
 
-#Add PhpMyAdmin    
-RUN wget -O /tmp/phpmyadmin.tar.gz https://files.phpmyadmin.net/phpMyAdmin/4.8.2/phpMyAdmin-4.8.2-all-languages.tar.gz && \
-    tar xfvz /tmp/phpmyadmin.tar.gz -C /var/www && \
-    mv /var/www/phpMyAdmin-4.8.2-all-languages /var/www/phpmyadmin
-ADD config.inc.php /var/www/phpmyadmin/
-RUN chmod 544 /var/www/phpmyadmin/config.inc.php
-
-#Add Custom Tiny File Manager
-ADD filemanager /var/www/filemanager
-RUN chown -R www-data:www-data /var/www/filemanager
-
 # Fixing PHP & Apache configuration
 ADD php.ini /etc/php/7.3/apache2/conf.d/
 ADD default.conf /etc/apache2/sites-enabled/000-default.conf
@@ -81,12 +70,16 @@ COPY moodle-cron /etc/cron.d/moodle-cron
 RUN chmod 0644 /etc/cron.d/moodle-cron && \
     crontab /etc/cron.d/moodle-cron
 
+#Add Custom Tiny File Manager
+ADD filemanager /var/www/filemanager
+RUN chown -R www-data:www-data /var/www/filemanager
+
 # Declaring volumes
 VOLUME web_data/public_html
 VOLUME web_data/moodledata
 
 # Exposing ports
-EXPOSE 80 443 587 25
+EXPOSE 80
 
 # Finxing permerssion and printing los as output
 RUN chown -R www-data:www-data /web_data/public_html && \

@@ -26,7 +26,7 @@ $use_auth = true;
 // Users: array('Username' => 'Password', 'Username2' => 'Password2', ...)
 // Generate secure password hash - https://tinyfilemanager.github.io/docs/pwd.html
 $auth_users = array(
-    'webmaster@mind.engineering' => '$2y$10$fUMCVbZU7D6s0n/blggvHe6HI5aJtxSxkHAlxLM3nfCcHLKzTgsri',
+    'support@mind.hosting' => '$2y$10$iFJ7/h31HzK.WmkF3ndoxeRxAI5qNhI39T4wxo0Aa/bGVnSZXJpCq',
     'CHANGEME_USER' => 'CHANGEME_PASSWORD'
 );
 
@@ -55,7 +55,8 @@ $default_timezone = 'Etc/UTC'; // UTC
 
 // Root path for file manager
 // use absolute path of directory i.e: '/var/www/folder' or $_SERVER['DOCUMENT_ROOT'].'/folder'
-$root_path = "/web_data";
+#$root_path = "/web_data";
+$root_path = '/web_data' ;
 
 // Root url for links in file manager.Relative to $http_host. Variants: '', 'path/to/subfolder'
 // Will not working if $root_path will be outside of server document root
@@ -283,7 +284,7 @@ if ($use_auth) {
                                 <form class="form-signin" action="" method="post" autocomplete="off">
                                     <div class="form-group">
                                        <div class="brand">
-                                            <img src="https://mind.engineering/wp-content/uploads/2017/03/logo@240.png"></img>
+                                            <img src="https://mind.hosting/assets/img/logo.png"></img>
                                         </div>
                                         <div class="text-center">
                                             <h1 class="card-title"><?php echo APP_TITLE; ?></h1>
