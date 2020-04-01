@@ -9,7 +9,7 @@ services:
   reverse-proxy:
     image: traefik:v2.2
     command:
-      - "--log.level=DEBUG"
+#      - "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
     ports:
@@ -56,7 +56,7 @@ services:
       MOODLE_DB_USER: ${DATABASE_USER}
       MOODLE_DB_NAME: ${DATABASE_NAME}
       MOODLE_DB_PASS: ${DATABASE_PASSWORD}
-      MOODLE_DB_PRFX: ${DATABASE_PRFX}
+      MOODLE_DB_PRFX: mdl_
       MOODLE_DATA_ROOT: ${MOODLE_DATA_ROOT}
       MOODLE_DIRECTORY_PERMISSIONS: ${MOODLE_DIRECTORY_PERMISSIONS}
       MOODLE_ADMIN_DIRECTORY: ${MOODLE_ADMIN_DIRECTORY}
