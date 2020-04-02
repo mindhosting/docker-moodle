@@ -73,15 +73,15 @@ services:
     depends_on:
       - reverse-proxy
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/London
-      - CLI_ARGS= #optional
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/London
+      CLI_ARGS: #optional
     volumes:
       # TO CONTROLE DOCKER SOCK AND DOCKER TO STOP/START MYSQL CONTAINER BEFORE/AFTER BACKUP
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
-      - ./volumes/duplicati_scripts:/usr/bin/cc_scripts
+      - ./volumes/backup/script.sh:/usr/bin/script.sh
       # ACCESS TO VOLUME SOURCES
       - ./volumes:/source
       # BACKUP DISTINATION
