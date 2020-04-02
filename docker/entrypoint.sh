@@ -10,7 +10,7 @@ logo_print(){
     ██║ ╚═╝ ██║██║██║ ╚████║██████╔╝    ██║  ██║╚██████╔╝███████║   ██║   ██║██║ ╚████║╚██████╔╝
     ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═════╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ 
                                                                                          PHP 7.3
-    MOOLDE CONTAINER (R) MARS2020 V0.1
+    MOOLDE CONTAINER (R) MARS2020 V0.7
     FOR MIND HOSTING
     https://mind.mindhosting
     by SAKLY Ayoub
@@ -22,19 +22,18 @@ apache_set_servername(){
     echo "ServerName "$VIRTUAL_HOST >> /etc/apache2/apache2.conf
     echo "[OK] APACHE SERVER NAME CONFIGURED"
 }
-moodle_setup(){
+moodle_setup_files(){
     if [[ -z "$(ls -A /web_data/public_html)" ]]; then
         cp -ar /web_data/moodle/. /web_data/public_html
         cp /web_data/public_html/config-dist.php /web_data/public_html/config.php
-        rm -r /web_data/moodle
         echo "[OK] WEB DIRECTORY POPULATED WITH MOODLE FILES"
     fi    
 }
 moodle_update_config(){
     sed -i "/->dbtype/c\$CFG->dbtype    = '"$MOODLE_DB_TYPE"';" /web_data/public_html/config.php
     sed -i "/->dbhost/c\$CFG->dbhost    = '"$MOODLE_DB_HOST"';" /web_data/public_html/config.php
-    sed -i "/->dbname/c\$CFG->dbname    = '"$MOODLE_DB_USER"';" /web_data/public_html/config.php
-    sed -i "/->dbuser/c\$CFG->dbuser    = '"$MOODLE_DB_NAME"';" /web_data/public_html/config.php
+    sed -i "/->dbname/c\$CFG->dbname    = '"$MOODLE_DB_NAME"';" /web_data/public_html/config.php
+    sed -i "/->dbuser/c\$CFG->dbuser    = '"$MOODLE_DB_USER"';" /web_data/public_html/config.php
     sed -i "/->dbpass/c\$CFG->dbpass    = '"$MOODLE_DB_PASS"';" /web_data/public_html/config.php
     sed -i "/->prefix/c\$CFG->prefix    = '"$MOODLE_DB_PRFX"';" /web_data/public_html/config.php
     sed -i "/->wwwroot/c\$CFG->wwwroot   = '"$MOODLE_HOST_PROTOCOLE"://"$VIRTUAL_HOST"';" /web_data/public_html/config.php
@@ -64,17 +63,31 @@ cron_service_start(){
     service cron start 1>/dev/null 2>&1;
     echo "[OK] CRON SERVICE STARTED"
 }
+moodle_setup_database(){
+    if [[ -f /web_data/db_data/$MOODLE_DB_NAME/mdl_user.frm ]] && [[ -f /web_data/db_data/$MOODLE_DB_NAME/mdl_user.ibd ]]; then
+        echo "[CHECK] MOODLE DATABASE ALRADY INITILIZED"
+    else
+        php /web_data/public_html/admin/cli/install_database.php --lang=$LANG --adminuser=$ADMINUSER --adminpass=$ADMINPASS --adminemail=$ADMINEMAIL --agree-license --fullname=$FULLNAME --shortname=$SHORTNAME
+        echo "[OK] MOODLE DATABASE SETTED UP"
+    fi
+}
+moodle_cleanup_install_files(){
+    rm -r /web_data/moodle
+    echo "[OK] MOOLDE INSTALL FILES CLEANED UP"
+}
 if [[ "$1" == apache2* ]]; then
     logo_print
     echo "[Initilizing ...]"
     echo ""
     apache_set_servername
-    moodle_setup
+    moodle_setup_files
     moodle_update_config
     moodle_securing_web
     moodle_securing_data
-    filemanager_set_credential
+    moodle_setup_database
+    moodle_cleanup_install_files
     cron_service_start
+    filemanager_set_credential
     echo ""
     echo ""
     echo "**** CONTAINER STARED SUCCESSFULY ****"
