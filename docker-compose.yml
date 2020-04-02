@@ -29,6 +29,7 @@ services:
       MYSQL_USER: ${DATABASE_USER}
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
+      TZ: ${TIMEZONE}
     volumes:
       - ./volumes/db_data:/var/lib/mysql
   moodle:
@@ -65,6 +66,7 @@ services:
       MOODLE_ADMIN_DIRECTORY: ${MOODLE_ADMIN_DIRECTORY}
       MOODLE_HOST_PROTOCOLE: ${WEB_PROTOCOLE}
       VIRTUAL_HOST: '${DOMAIN_NAME}'
+      TZ: ${TIMEZONE}
   duplicati:
     env_file:
       - ./.env
@@ -75,7 +77,7 @@ services:
     environment:
       PUID: 1000
       PGID: 1000
-      TZ: Europe/London
+      TZ: ${TIMEZONE}
       CLI_ARGS: #optional
     volumes:
       # TO CONTROLE DOCKER SOCK AND DOCKER TO STOP/START MYSQL CONTAINER BEFORE/AFTER BACKUP
@@ -110,6 +112,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
       PMA_HOST: ${DATABASE_HOST}
       PMA_ABSOLUTE_URI: ${WEB_PROTOCOLE}://${DOMAIN_NAME}/phpmyadmin/
+      TZ: ${TIMEZONE}
     labels:
       - "traefik.http.routers.phpmyadmin.rule=(Host(`${DOMAIN_NAME}`) && PathPrefix(`/phpmyadmin/`))"
       - "traefik.http.routers.phpmyadmin.middlewares=phpmyadmin-prefix"
