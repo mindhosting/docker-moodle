@@ -68,19 +68,26 @@ services:
   duplicati:
     env_file:
       - ./.env
-    image: duplicati/duplicati
+    image: linuxserver/duplicati
     restart: unless-stopped
     depends_on:
       - reverse-proxy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - CLI_ARGS= #optional
     volumes:
       # TO CONTROLE DOCKER SOCK AND DOCKER TO STOP/START MYSQL CONTAINER BEFORE/AFTER BACKUP
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
       - ./volumes/duplicati_scripts:/usr/bin/cc_scripts
       # ACCESS TO VOLUME SOURCES
-      - ./volumes:/src/docker-volumes
+      - ./volumes:/source
       # BACKUP DISTINATION
-      - ./volumes/backup:/data
+      - ./volumes/backup/backups:/backups
+      # DUPLICATI CONFIGURATION
+      - /volumes/backup/config:/config
     labels:
       - "traefik.http.routers.duplicati.rule=(Host(`${DOMAIN_NAME}`) && PathPrefix(`/duplicati/`))"
       - "traefik.http.routers.duplicati.middlewares=duplicati-prefix"
@@ -108,3 +115,4 @@ services:
       - "traefik.http.routers.phpmyadmin.middlewares=phpmyadmin-prefix"
       - "traefik.http.middlewares.phpmyadmin-prefix.stripprefix.prefixes=/phpmyadmin/"
       - "traefik.http.routers.phpmyadmin.priority=99"
+
