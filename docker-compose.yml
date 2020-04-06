@@ -11,13 +11,23 @@ services:
   reverse-proxy:
     image: traefik:v2.2
     command:
-#      - "--log.level=DEBUG"
-      - "--api.insecure=true"
+      #- "--log.level=DEBUG"
+      #- "--api.insecure=true"
       - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      # CONFIG TRAEFIK SSL CONFIG WITH LETSENCRYPT 
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      #- "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.letsencrypt.acme.email=mindengineering.tn@gmail.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
+      - "443:443"
       - "8080:8080"
     volumes:
+      - ./volumes/letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock
   db:
     env_file:
@@ -49,8 +59,20 @@ services:
       - ./volumes/db_data:/web_data/db_data
       - ./volumes/backup:/web_data/backup
     labels:
-      #- "traefik.http.routers.moodle.rule=(Host(`moodle.docker.localhost`) || Host(`www.moodle.docker.localhost`))"
-      - "traefik.http.routers.moodle.rule=Host(`${DOMAIN_NAME}`)"
+      # SIMPLE HTTP CONFIGURATION
+      #- "traefik.http.routers.moodle.rule=Host(`${DOMAIN_NAME}`)"
+      # CONFIG TRAEFIK SSL CONFIG WITH LETSENCRYPT WITH HTTPS REDIRECTION
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.moodle-redirect-websecure.redirectscheme.scheme=https"
+      - "traefik.http.routers.moodle-web.middlewares=moodle-redirect-websecure"
+      #- "traefik.http.routers.moodle-web.rule=Host(`${DOMAIN_NAME}`)"
+      - "traefik.http.routers.moodle-web.rule=Host(`${DOMAIN_NAME}`) || Host(`www.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.moodle-web.entrypoints=web"
+      #- "traefik.http.routers.moodle-websecure.rule=Host(`${DOMAIN_NAME}`)"
+      - "traefik.http.routers.moodle-websecure.rule=Host(`${DOMAIN_NAME}`) || Host(`www.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.moodle-websecure.entrypoints=websecure"
+      - "traefik.http.routers.moodle-websecure.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.moodle-websecure.tls=true"
     hostname: ${DOMAIN_NAME}
     environment:
       FILE_MANAGER_USER: ${FILE_MANAGER_USER}
@@ -91,11 +113,22 @@ services:
       # DUPLICATI CONFIGURATION
       - /volumes/backup/config:/config
     labels:
-      - "traefik.http.routers.duplicati.rule=(Host(`${DOMAIN_NAME}`) && PathPrefix(`/duplicati/`))"
-      - "traefik.http.routers.duplicati.middlewares=duplicati-prefix"
-      - "traefik.http.middlewares.duplicati-prefix.stripprefix.prefixes=/duplicati/"
-      - "traefik.http.routers.duplicati.priority=89"
-      - "traefik.http.services.duplicati.loadbalancer.server.port=8200"
+      # SIMPLE HTTP CONFIGURATION
+      #- "traefik.http.routers.duplicati.rule=(Host(`${DOMAIN_NAME}`) && PathPrefix(`/duplicati/`))"
+      #- "traefik.http.routers.duplicati.middlewares=duplicati-prefix"
+      #- "traefik.http.middlewares.duplicati-prefix.stripprefix.prefixes=/duplicati/"
+      #- "traefik.http.routers.duplicati.priority=89"
+      #- "traefik.http.services.duplicati.loadbalancer.server.port=8200"
+      # CONFIG TRAEFIK SSL CONFIG WITH LETSENCRYPT WITH HTTPS REDIRECTION
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.duplicati-redirect-websecure.redirectscheme.scheme=https"
+      - "traefik.http.routers.duplicati-web.middlewares=duplicati-redirect-websecure"
+      - "traefik.http.routers.duplicati-web.rule=Host(`duplicati.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.duplicati-web.entrypoints=web"
+      - "traefik.http.routers.duplicati-websecure.rule=Host(`duplicati.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.duplicati-websecure.entrypoints=websecure"
+      - "traefik.http.routers.duplicati-websecure.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.duplicati-websecure.tls=true"
     hostname: ${DOMAIN_NAME}
   phpmyadmin:
     env_file:
@@ -111,11 +144,21 @@ services:
       MYSQL_USERNAME: root
       MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
       PMA_HOST: ${DATABASE_HOST}
-      PMA_ABSOLUTE_URI: ${WEB_PROTOCOLE}://${DOMAIN_NAME}/phpmyadmin/
+      #PMA_ABSOLUTE_URI: ${WEB_PROTOCOLE}://phpmyadmin.${DOMAIN_NAME}/
       TZ: ${TIMEZONE}
     labels:
-      - "traefik.http.routers.phpmyadmin.rule=(Host(`${DOMAIN_NAME}`) && PathPrefix(`/phpmyadmin/`))"
-      - "traefik.http.routers.phpmyadmin.middlewares=phpmyadmin-prefix"
-      - "traefik.http.middlewares.phpmyadmin-prefix.stripprefix.prefixes=/phpmyadmin/"
-      - "traefik.http.routers.phpmyadmin.priority=99"
-
+      # SIMPLE HTTP CONFIGURATION
+      #- "traefik.http.routers.phpmyadmin.rule=(Host(`${DOMAIN_NAME}`) && PathPrefix(`/phpmyadmin/`))"
+      #- "traefik.http.routers.phpmyadmin.middlewares=phpmyadmin-prefix"
+      #- "traefik.http.middlewares.phpmyadmin-prefix.stripprefix.prefixes=/phpmyadmin/"
+      #- "traefik.http.routers.phpmyadmin.priority=99"
+      # CONFIG TRAEFIK SSL CONFIG WITH LETSENCRYPT WITH HTTPS REDIRECTION
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.phpmyadmin-redirect-websecure.redirectscheme.scheme=https"
+      - "traefik.http.routers.phpmyadmin-web.middlewares=phpmyadmin-redirect-websecure"
+      - "traefik.http.routers.phpmyadmin-web.rule=Host(`phpmyadmin.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.phpmyadmin-web.entrypoints=web"
+      - "traefik.http.routers.phpmyadmin-websecure.rule=Host(`phpmyadmin.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.phpmyadmin-websecure.entrypoints=websecure"
+      - "traefik.http.routers.phpmyadmin-websecure.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.phpmyadmin-websecure.tls=true"
