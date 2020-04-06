@@ -85,7 +85,7 @@ if [[ "$1" == apache2* ]]; then
     moodle_securing_web
     moodle_securing_data
     moodle_setup_database
-    moodle_cleanup_install_files
+    #moodle_cleanup_install_files
     cron_service_start
     filemanager_set_credential
     echo ""
