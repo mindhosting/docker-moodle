@@ -77,7 +77,7 @@ services:
     environment:
       FILE_MANAGER_USER: ${FILE_MANAGER_USER}
       FILE_MANAGER_PASSWORD: ${FILE_MANAGER_PASSWORD}
-      MOODLE_DB_TYPE: ${DATABASE_TYPE}
+      MOODLE_DB_TYPE: mysqli
       MOODLE_DB_HOST: ${DATABASE_HOST}
       MOODLE_DB_USER: ${DATABASE_USER}
       MOODLE_DB_NAME: ${DATABASE_NAME}
@@ -89,6 +89,12 @@ services:
       MOODLE_HOST_PROTOCOLE: https
       VIRTUAL_HOST: '${DOMAIN_NAME}'
       TZ: ${TIMEZONE}
+      LANG: ${LANG}
+      ADMINUSER: ${ADMINUSER}
+      ADMINPASS: ${ADMINPASS}
+      ADMINEMAIL: ${ADMINEMAIL}
+      FULLNAME: ${FULLNAME}
+      SHORTNAME: ${SHORTNAME}
   duplicati:
     env_file:
       - ./.env

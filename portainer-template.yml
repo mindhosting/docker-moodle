@@ -22,8 +22,6 @@ services:
       - ./root/$DOMAIN_NAME/volumes/letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock
   db:
-    env_file:
-      - ./.env
     image: mysql:$MYSQL_V
     restart: unless-stopped
     environment:
@@ -35,8 +33,6 @@ services:
     volumes:
       - ./root/$DOMAIN_NAME/volumes/db_data:/var/lib/mysql
   moodle:
-    env_file:
-      - ./.env
     image: mindhosting/moodle:latest
     depends_on:
       - db
@@ -69,7 +65,7 @@ services:
     environment:
       FILE_MANAGER_USER: $FILE_MANAGER_USER
       FILE_MANAGER_PASSWORD: $FILE_MANAGER_PASSWORD
-      MOODLE_DB_TYPE: $DATABASE_TYPE
+      MOODLE_DB_TYPE: mysqli
       MOODLE_DB_HOST: $DATABASE_HOST
       MOODLE_DB_USER: $DATABASE_USER
       MOODLE_DB_NAME: $DATABASE_NAME
@@ -81,9 +77,13 @@ services:
       MOODLE_HOST_PROTOCOLE: https
       VIRTUAL_HOST: '$DOMAIN_NAME'
       TZ: $TIMEZONE
+      LANG: $LANG
+      ADMINUSER: $ADMINUSER
+      ADMINPASS: $ADMINPASS
+      ADMINEMAIL: $ADMINEMAIL
+      FULLNAME: $FULLNAME
+      SHORTNAME: $SHORTNAME
   duplicati:
-    env_file:
-      - ./.env
     image: linuxserver/duplicati
     restart: unless-stopped
     depends_on:
@@ -123,8 +123,6 @@ services:
       - "traefik.http.routers.duplicati-websecure.tls=true"
     hostname: $DOMAIN_NAME
   phpmyadmin:
-    env_file:
-      - ./.env
     image: phpmyadmin/phpmyadmin
     restart: unless-stopped
     depends_on:
