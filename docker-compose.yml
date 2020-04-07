@@ -45,7 +45,7 @@ services:
   moodle:
     env_file:
       - ./.env
-    build: ./docker
+    image: mindhosting/moodle:latest
     depends_on:
       - db
       - reverse-proxy
