@@ -25,7 +25,7 @@ services:
       - ./$DOMAIN_NAME/volumes/moodledata:/web_data/moodledata
       # FOR DUPLICATI BACKUP PURPUSE
       - ./$DOMAIN_NAME/volumes/db_data:/web_data/db_data
-      #- ./$DOMAIN_NAME/volumes/backup:/web_data/backup
+      - ./$DOMAIN_NAME/volumes/backup:/web_data/backup
       VIRTUAL_HOST: $DOMAIN_NAME
       LETSENCRYPT_HOST: $DOMAIN_NAME
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
