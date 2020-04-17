@@ -17,7 +17,7 @@ services:
       - db
     restart: unless-stopped
     links:
-      - $DATABASE_HOST:$DATABASE_HOST
+      - db:db
     volumes:
       - ./$DOMAIN_NAME/volumes/public_html:/web_data/public_html
       - ./$DOMAIN_NAME/volumes/moodledata:/web_data/moodledata
@@ -29,7 +29,7 @@ services:
       FILE_MANAGER_USER: $FILE_MANAGER_USER
       FILE_MANAGER_PASSWORD: $FILE_MANAGER_PASSWORD
       MOODLE_DB_TYPE: mysqli
-      MOODLE_DB_HOST: $DATABASE_HOST
+      MOODLE_DB_HOST: db
       MOODLE_DB_USER: $DATABASE_USER
       MOODLE_DB_NAME: $DATABASE_NAME
       MOODLE_DB_PASS: $DATABASE_PASSWORD
@@ -79,7 +79,7 @@ services:
     depends_on:
       - db
     links:
-      - $DATABASE_HOST:$DATABASE_HOST
+      - db:db
     environment:
       MYSQL_USERNAME: root
       MYSQL_ROOT_PASSWORD: $DATABASE_ROOT_PASSWORD
