@@ -19,7 +19,7 @@ services:
       - "443:443"
       #- "8080:8080"
     volumes:
-      - ./root/$DOMAIN_NAME/volumes/letsencrypt:/letsencrypt
+      - ./$DOMAIN_NAME/volumes/letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock
   db:
     image: mysql:$MYSQL_V
@@ -31,7 +31,7 @@ services:
       MYSQL_ROOT_PASSWORD: $DATABASE_ROOT_PASSWORD
       TZ: $TIMEZONE
     volumes:
-      - ./root/$DOMAIN_NAME/volumes/db_data:/var/lib/mysql
+      - ./$DOMAIN_NAME/volumes/db_data:/var/lib/mysql
   moodle:
     image: mindhosting/moodle:latest
     depends_on:
@@ -41,11 +41,11 @@ services:
     links:
       - $DATABASE_HOST:$DATABASE_HOST
     volumes:
-      - ./root/$DOMAIN_NAME/volumes/public_html:/web_data/public_html
-      - ./root/$DOMAIN_NAME/volumes/moodledata:/web_data/moodledata
+      - ./$DOMAIN_NAME/volumes/public_html:/web_data/public_html
+      - ./$DOMAIN_NAME/volumes/moodledata:/web_data/moodledata
       # FOR DUPLICATI BACKUP PURPUSE
-      - ./root/$DOMAIN_NAME/volumes/db_data:/web_data/db_data
-      - ./root/$DOMAIN_NAME/volumes/backup:/web_data/backup
+      - ./$DOMAIN_NAME/volumes/db_data:/web_data/db_data
+      - ./$DOMAIN_NAME/volumes/backup:/web_data/backup
     labels:
       # SIMPLE HTTP CONFIGURATION
       #- "traefik.http.routers.moodle.rule=Host(`$DOMAIN_NAME`)"
@@ -97,13 +97,13 @@ services:
       # TO CONTROLE DOCKER SOCK AND DOCKER TO STOP/START MYSQL CONTAINER BEFORE/AFTER BACKUP
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
-      - ./root/$DOMAIN_NAME/volumes/backup/script.sh:/usr/bin/script.sh
+      - ./$DOMAIN_NAME/volumes/backup/script.sh:/usr/bin/script.sh
       # ACCESS TO VOLUME SOURCES
-      - ./root/$DOMAIN_NAME/volumes:/source
+      - ./$DOMAIN_NAME/volumes:/source
       # BACKUP DISTINATION
-      - ./root/$DOMAIN_NAME/volumes/backup/backups:/backups
+      - ./$DOMAIN_NAME/volumes/backup/backups:/backups
       # DUPLICATI CONFIGURATION
-      - ./root/$DOMAIN_NAME/volumes/backup/config:/config
+      - ./$DOMAIN_NAME/volumes/backup/config:/config
     labels:
       # SIMPLE HTTP CONFIGURATION
       #- "traefik.http.routers.duplicati.rule=(Host(`$DOMAIN_NAME`) && PathPrefix(`/duplicati/`))"
