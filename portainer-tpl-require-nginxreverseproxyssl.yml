@@ -37,6 +37,7 @@ services:
     links:
       - db:db
     volumes:
+      - mysql:/web_data/db_data
       - web:/web_data/public_html
       - moodledata:/web_data/moodledata
     hostname: $DOMAIN_NAME
