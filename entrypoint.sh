@@ -36,7 +36,7 @@ moodle_update_config(){
     sed -i "/->dbuser/c\$CFG->dbuser    = '"$ADMIN_USERNAME"';" /web_data/public_html/config.php
     sed -i "/->dbpass/c\$CFG->dbpass    = '"$ADMIN_PASSWORD"';" /web_data/public_html/config.php
     sed -i "/->prefix/c\$CFG->prefix    = 'mdl_';" /web_data/public_html/config.php
-    sed -i "/->wwwroot/c\$CFG->wwwroot   = 'http://"$VIRTUAL_HOST"';" /web_data/public_html/config.php
+    sed -i "/->wwwroot/c\$CFG->wwwroot   = 'https://"$VIRTUAL_HOST"';" /web_data/public_html/config.php
     sed -i "/->dataroot/c\$CFG->dataroot  = '/web_data/moodledata';" /web_data/public_html/config.php
     sed -i "/->directorypermissions/c\$CFG->directorypermissions = "02777";" /web_data/public_html/config.php
     sed -i "/->admin/c\$CFG->admin = 'admin';" /web_data/public_html/config.php
