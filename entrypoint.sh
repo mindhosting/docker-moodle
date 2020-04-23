@@ -30,23 +30,17 @@ moodle_setup_files(){
     fi    
 }
 moodle_update_config(){
-    sed -i "/->dbtype/c\$CFG->dbtype    = '"$MOODLE_DB_TYPE"';" /web_data/public_html/config.php
-    sed -i "/->dbhost/c\$CFG->dbhost    = '"$MOODLE_DB_HOST"';" /web_data/public_html/config.php
-    sed -i "/->dbname/c\$CFG->dbname    = '"$MOODLE_DB_NAME"';" /web_data/public_html/config.php
-    sed -i "/->dbuser/c\$CFG->dbuser    = '"$MOODLE_DB_USER"';" /web_data/public_html/config.php
-    sed -i "/->dbpass/c\$CFG->dbpass    = '"$MOODLE_DB_PASS"';" /web_data/public_html/config.php
-    sed -i "/->prefix/c\$CFG->prefix    = '"$MOODLE_DB_PRFX"';" /web_data/public_html/config.php
-    sed -i "/->wwwroot/c\$CFG->wwwroot   = '"$MOODLE_HOST_PROTOCOLE"://"$VIRTUAL_HOST"';" /web_data/public_html/config.php
-    sed -i "/->dataroot/c\$CFG->dataroot  = '"$MOODLE_DATA_ROOT"';" /web_data/public_html/config.php
-    sed -i "/->directorypermissions/c\$CFG->directorypermissions = "$MOODLE_DIRECTORY_PERMISSIONS";" /web_data/public_html/config.php
-    sed -i "/->admin/c\$CFG->admin = '"$MOODLE_ADMIN_DIRECTORY"';" /web_data/public_html/config.php
+    sed -i "/->dbtype/c\$CFG->dbtype    = 'mysqli';" /web_data/public_html/config.php
+    sed -i "/->dbhost/c\$CFG->dbhost    = 'db';" /web_data/public_html/config.php
+    sed -i "/->dbname/c\$CFG->dbname    = '"$ADMIN_USERNAME"';" /web_data/public_html/config.php
+    sed -i "/->dbuser/c\$CFG->dbuser    = '"$ADMIN_USERNAME"';" /web_data/public_html/config.php
+    sed -i "/->dbpass/c\$CFG->dbpass    = '"$ADMIN_PASSWORD"';" /web_data/public_html/config.php
+    sed -i "/->prefix/c\$CFG->prefix    = 'mdl_';" /web_data/public_html/config.php
+    sed -i "/->wwwroot/c\$CFG->wwwroot   = 'http://"$VIRTUAL_HOST"';" /web_data/public_html/config.php
+    sed -i "/->dataroot/c\$CFG->dataroot  = '/web_data/moodledata';" /web_data/public_html/config.php
+    sed -i "/->directorypermissions/c\$CFG->directorypermissions = "02777";" /web_data/public_html/config.php
+    sed -i "/->admin/c\$CFG->admin = 'admin';" /web_data/public_html/config.php
     echo "[OK] MOODLE CONFIG FILE UPDATED"
-}
-filemanager_set_credential(){
-    if [[ -n "$FILE_MANAGER_USER" ]] && [[ -n "$FILE_MANAGER_PASSWORD" ]]; then
-        sed -i -e "s#'CHANGEME_USER' => 'CHANGEME_PASSWORD'#'"$FILE_MANAGER_USER"' => '"$FILE_MANAGER_PASSWORD"'#g" /var/www/filemanager/index.php
-        echo "[OK] TINY FILE MANAGER CREDENTIAL SETTED UP"
-    fi
 }
 moodle_securing_web(){
     chown -R www-data:www-data /web_data/public_html
@@ -64,10 +58,10 @@ cron_service_start(){
     echo "[OK] CRON SERVICE STARTED"
 }
 moodle_setup_database(){
-    if [[ -f /web_data/db_data/$MOODLE_DB_NAME/mdl_user.frm ]] && [[ -f /web_data/db_data/$MOODLE_DB_NAME/mdl_user.ibd ]]; then
+    if [[ -f /web_data/db_data/$ADMIN_USERNAME/mdl_user.frm ]] && [[ -f /web_data/db_data/$ADMIN_USERNAME/mdl_user.ibd ]]; then
         echo "[CHECK] MOODLE DATABASE ALRADY INITILIZED"
     else
-        php /web_data/public_html/admin/cli/install_database.php --lang=$LANG --adminuser=$ADMINUSER --adminpass=$ADMINPASS --adminemail=$ADMINEMAIL --agree-license --fullname=$FULLNAME --shortname=$SHORTNAME
+        php /web_data/public_html/admin/cli/install_database.php --lang=fr --adminuser=$ADMIN_USERNAME --adminpass=$ADMIN_PASSWORD --adminemail=$ADMIN_EMAIL --agree-license --fullname=$VIRTUAL_HOST --shortname=MOODLE3.8
         echo "[OK] MOODLE DATABASE SETTED UP"
     fi
 }
@@ -85,9 +79,7 @@ if [[ "$1" == apache2* ]]; then
     moodle_securing_web
     moodle_securing_data
     moodle_setup_database
-    #moodle_cleanup_install_files
     cron_service_start
-    filemanager_set_credential
     echo ""
     echo ""
     echo "**** CONTAINER STARED SUCCESSFULY ****"
