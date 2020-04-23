@@ -1,10 +1,5 @@
 version: '3'
 
-volumes:
-  mysql:
-  web:
-  moodledata:
-
 services:
   db:
     image: mysql:5.7.29
@@ -16,7 +11,7 @@ services:
       MYSQL_ROOT_PASSWORD: rootpassword
       TZ: Africa/Tunis
     volumes:
-      - mysql:/var/lib/mysql
+      - ./127.0.0.1/mysql:/var/lib/mysql
 
   moodle:
     build: ./
@@ -26,9 +21,9 @@ services:
     links:
       - db:db
     volumes:
-      - mysql:/web_data/db_data
-      - web:/web_data/public_html
-      - moodledata:/web_data/moodledata
+      - ./127.0.0.1/mysql:/web_data/db_data
+      - ./127.0.0.1/web:/web_data/public_html
+      - ./127.0.0.1/moodledata:/web_data/moodledata
     hostname: 127.0.0.1
     environment:
       FILEMANAGER_ROOT_PATH: '/web_data'
