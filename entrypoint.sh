@@ -58,6 +58,7 @@ cron_service_start(){
     echo "[OK] CRON SERVICE STARTED"
 }
 moodle_setup_database(){
+    sleep 20
     if [[ -f /web_data/db_data/$ADMIN_USERNAME/mdl_user.frm ]] && [[ -f /web_data/db_data/$ADMIN_USERNAME/mdl_user.ibd ]]; then
         echo "[CHECK] MOODLE DATABASE ALRADY INITILIZED"
     else
