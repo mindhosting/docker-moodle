@@ -43,6 +43,7 @@ services:
       VIRTUAL_HOST: $DOMAIN_NAME
       LETSENCRYPT_HOST: $DOMAIN_NAME
       LETSENCRYPT_EMAIL: mindengineering.tn@gmail.com
+    network_mode: bridge
 
   duplicati:
     image: linuxserver/duplicati
