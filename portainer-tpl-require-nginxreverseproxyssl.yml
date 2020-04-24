@@ -39,7 +39,7 @@ services:
       ADMIN_USERNAME: $USERNAME
       ADMIN_PASSWORD: $PASSWORD
       ADMIN_EMAIL: $EMAIL   
-      TZ: $TIMEZONE
+      TZ: Africa/Tunis
       VIRTUAL_HOST: $DOMAIN_NAME
       LETSENCRYPT_HOST: $DOMAIN_NAME
       LETSENCRYPT_EMAIL: mindengineering.tn@gmail.com
